@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scale-down-cronjob
+  namespace: poc
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: internal-kubectl
+          containers:
+          - name: scale-down
+            image: chaudharishubham2911/scale-down
+            env:
+            - name: PROMETHEUS_URL
+              value: http://a553c59263e0a4351906ddf1edd66783-102883958.us-east-1.elb.amazonaws.com:8080
+          restartPolicy: OnFailure
