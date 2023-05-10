@@ -9,10 +9,17 @@ scale_up()
 
   echo "Total Connected Users: $get_user_request_count"
   current_pod_count=$(kubectl get po -n poc -l app=stream | grep Running | wc -l)
-  total_pod_count=`echo | awk "{print $get_user_request_count * $current_pod_count}"`
-  echo "Scaling application to $total_pod_count replicas....!!!!"
-  kubectl scale deploy stream -n poc --replicas=$total_pod_count
-  echo "Successfully scaled up the application to $total_pod_count replicas....!!!!"
+  
+  if [ $current_pod_count -eq 0 ]; then
+    echo "Scaling application to $get_user_request_count replicas....!!!!"
+    kubectl scale deploy stream -n poc --replicas=$get_user_request_count
+    echo "Successfully scaled up the application to $get_user_request_count replicas....!!!!"
+  else
+    total_pod_count=`echo | awk "{print $get_user_request_count * $current_pod_count}"`
+    echo "Scaling application to $total_pod_count replicas....!!!!"
+    kubectl scale deploy stream -n poc --replicas=$total_pod_count
+    echo "Successfully scaled up the application to $total_pod_count replicas....!!!!"
+  fi
   
 }
 
